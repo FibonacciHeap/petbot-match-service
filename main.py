@@ -52,7 +52,7 @@ def index():
 def check_match():
     # Get pet data
     pet_data = request.data
-    if type(petData) == str:
+    if type(pet_data) == str:
         return jsonify({"Error": "Could not read the request data."}), 400
 
     pet = pet_data["pet"]
