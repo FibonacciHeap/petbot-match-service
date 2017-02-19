@@ -82,6 +82,9 @@ def check_match_routine(pet, closest_pets):
 
     # 2. Send top animal information to NLU svc
     match = create_match_request(closest_pets)
+    if not match:
+        return jsonify({})
+
     print("Match is", match)
     notify_match_to_user(match)
     return match
@@ -99,7 +102,7 @@ def notify_match_to_user(match):
     headers = { "Content-Type" : "application/json" }
 
     print ("Sending match", match)
-    r = requests.post(NLU_MATCH_URL, data=json.dumps(body.decode("utf-8")), headers=headers)
+    r = requests.post(NLU_MATCH_URL, data=json.dumps(body), headers=headers)
     print ("    Succeess?", r.status_code, r.text)
 
 def create_match_request(possible_pets):
@@ -117,7 +120,7 @@ def create_match_request(possible_pets):
     print("Candidates", possible_pets)
     best_match = max(possible_pets, key=lambda pet: pet["confidence"])
     if best_match["confidence"] < 0.25:
-        return jsonify({})
+        return None
     match_dict = {
         "facebookID": best_match["userID"],
         "imageURL": best_match["url"],
@@ -126,7 +129,7 @@ def create_match_request(possible_pets):
         "caregiverName": "Happy Paws & Claws",
         "caregiverAddress": "1555 Haste St, Berkeley, CA"
     }
-    return jsonify(match_dict)
+    return match_dict
 
 def assign_color_difference(color, possible_pets):
     def calculate_color_difference(color1, color2):
