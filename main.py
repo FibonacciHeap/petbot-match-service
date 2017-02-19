@@ -1,16 +1,18 @@
 from flask import Flask, jsonify
 import json
 from math import sqrt, exp
-import threading
+from multiprocessing.dummy import Pool
+import time
 
 app = Flask(__name__)
+pool = Pool(processes=1)
 
 #####################################################
 # CONSTANTS
 #####################################################
 
-OWNER_REPORTED_DB_TABLE_NAME = 'owner'
-SAMARITAN_REPORTED_DB_TABLE_NAME = 'samaritan'
+OWNER_REPORTED_DB_TABLE_NAME = 'OwnerReports'
+SAMARITAN_REPORTED_DB_TABLE_NAME = 'SamaritanReports'
 MAX_COLOR_DELTA = 764.8339663572415
 
 # Credits: http://stackoverflow.com/questions/4296249/
@@ -32,20 +34,21 @@ def triplet(rgb, lettercase=LOWERCASE):
 
 @app.route('/')
 def index():
-    return "Hi, I'm working :)"
+    #table = lookup_table(SAMARITAN_REPORTED_DB_TABLE_NAME)
+    #print(table)
+    #return table
+    return 'test'
 
 @app.route('/match/check', methods=['POST'])
 def check_match():
     # Get pet data
-    data = request.data
-    if type(data) == str:
-        pet = json.loads(data)
-    else:
-        return jsonify({ "Error": "Could not read the request data."}), 400
+    pet = request.data
+    if type(pet) == str:
+        return jsonify({"Error": "Could not read the request data."}), 400
 
     # Asynchronously run check match routine
-    thr = threading.Thread(target=check_match_routine, args=(pet), kwargs={})
-    thr.start()
+    callback = lambda: log_data("Finished match at", time.time())
+    pool.apply_async(check_match_routine, args=[pet], callback=callback)
 
     # Acknowledge that match is being checked
     return jsonify({}), 200
@@ -67,7 +70,7 @@ def check_match_routine(pet):
     #    and haven't been rejected
     closest_pets = get_closest_pets(pet)
     if (len(closest_pets) == 0):
-        print "No matches for pet", pet["reportId"]
+        print("No matches for pet", pet["reportId"])
         return
 
     # 2. Run matching algorithm between the current
@@ -147,6 +150,13 @@ def assign_match_scores(pet, possible_pets):
     for p in possible_pets:
         pet["confidence"] = calculate_match_score(p)
     return possible_pets
+
+def log_data(data):
+    print("Log:", data)
+
+#####################################################
+# DATABASE
+#####################################################
 
 
 if __name__ == "__main__":
