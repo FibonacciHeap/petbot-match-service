@@ -67,7 +67,7 @@ def check_match_routine(pet):
     #    and haven't been rejected
     closest_pets = get_closest_pets(pet)
     if (len(closest_pets) == 0):
-        print("No matches for pet", pet["reportId"])
+        print "No matches for pet", pet["reportId"]
         return
 
     # 2. Run matching algorithm between the current
