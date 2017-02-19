@@ -60,11 +60,12 @@ def check_match():
     other_pets = pet_data["otherPets"]
 
     # Asynchronously run check match routine
-    callback = lambda: log_data("Finished match at", time.time())
-    pool.apply_async(check_match_routine, args=[pet, other_pets], callback=callback)
+    # callback = lambda: log_data("Finished match at", time.time())
+    # pool.apply_async(check_match_routine, args=[pet, other_pets], callback=callback)
+    check_match_routine(pet, other_pets)
 
     # Acknowledge that match is being checked
-    return jsonify({})
+    return jsonify(match)
 
 #####################################################
 # HELPERS
@@ -81,7 +82,9 @@ def check_match_routine(pet, closest_pets):
 
     # 2. Send top animal information to NLU svc
     match = create_match_request(closest_pets)
+    print("Match is", match)
     notify_match_to_user(match)
+    return match
 
 def notify_match_to_user(match):
     """
@@ -122,15 +125,6 @@ def create_match_request(possible_pets):
         "caregiverAddress": "1555 Haste St, Berkeley, CA"
     }
     return jsonify(match_dict)
-
-def get_closest_pets(pet, max_dist_in_miles = 50):
-    """
-    Runs a SQL query in Google App Engine to get
-    closest records.
-
-    Range of pet["distance"] is [0, max_dist_in_miles].
-    """
-    pass
 
 def assign_color_difference(color, possible_pets):
     def calculate_color_difference(color1, color2):
@@ -188,3 +182,12 @@ if __name__ == "__main__":
 #         return OWNER_REPORTED_DB_TABLE_NAME
 #     elif pet_type == "owner":
 #         return SAMARITAN_REPORTED_DB_TABLE_NAME
+
+# def get_closest_pets(pet, max_dist_in_miles = 50):
+#     """
+#     Runs a SQL query in Google App Engine to get
+#     closest records.
+#
+#     Range of pet["distance"] is [0, max_dist_in_miles].
+#     """
+#     pass
