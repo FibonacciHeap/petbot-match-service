@@ -146,7 +146,7 @@ def assign_color_difference(color, possible_pets):
 
 def assign_distances(lat, lon, possible_pets):
     for p in possible_pets:
-        p["distance"] = feet_to_miles(lat, lon, p["reportLat"], p["reportLon"])
+        p["distance"] = mt_to_miles(lat, lon, p["reportLat"], p["reportLon"])
     return possible_pets
 
 def assign_match_scores(pet, possible_pets):
