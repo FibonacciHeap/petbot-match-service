@@ -89,7 +89,7 @@ def report_match():
         "attachment": {
             "type": "image",
             "payload": {
-                "url": "http://b-townblog.com/wp-content/uploads/2014/04/FoundDog-crab.jpg"
+                "url": "http://b-townblog.com/wp-content/uploads/2014/04/FoundDog-crab.jpg",
                 "is_reusable": True
             }
         }
