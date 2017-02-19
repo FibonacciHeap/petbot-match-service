@@ -151,7 +151,7 @@ def assign_match_scores(pet, possible_pets):
         probability_function = lambda x, y: w1*sigmoid_g1(x) + w2*linear_g2(y)
         f1, f2 = p["distance"], p["colorDelta"]
         return probability_function(f1, f2)
-    assign_color_difference(pet["color"], closest_pets)
+    assign_color_difference(pet["color"], possible_pets)
     for p in possible_pets:
         pet["confidence"] = calculate_match_score(p)
     return possible_pets
