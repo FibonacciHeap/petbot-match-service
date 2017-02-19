@@ -62,7 +62,7 @@ def check_match():
     # Asynchronously run check match routine
     # callback = lambda: log_data("Finished match at", time.time())
     # pool.apply_async(check_match_routine, args=[pet, other_pets], callback=callback)
-    check_match_routine(pet, other_pets)
+    match = check_match_routine(pet, other_pets)
 
     # Acknowledge that match is being checked
     return jsonify(match)
