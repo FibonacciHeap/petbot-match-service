@@ -113,9 +113,12 @@ def create_match_request(possible_pets):
     if best_match["confidence"] < 0.3:
         return None
     match_dict = {
+        "facebookID": best_match["userID"],
         "imageURL": best_match["url"],
         "petType": best_match["type"],
-        "confidence": best_match["confidence"]
+        "confidence": best_match["confidence"],
+        "caregiverName": "Happy Paws & Claws",
+        "caregiverAddress": "1555 Haste St, Berkeley, CA"
     }
     return jsonify(match_dict)
 
