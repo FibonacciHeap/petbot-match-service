@@ -159,7 +159,7 @@ def assign_match_scores(pet, possible_pets):
     assign_distances(pet["reportLat"], pet["reportLon"], possible_pets)
     assign_color_difference(pet["color"], possible_pets)
     for p in possible_pets:
-        pet["confidence"] = calculate_match_score(p)
+        p["confidence"] = calculate_match_score(p)
     return possible_pets
 
 def feet_to_miles(lat1, lon1, lat2, lon2):
