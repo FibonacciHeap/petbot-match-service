@@ -120,7 +120,7 @@ def create_match_request(possible_pets):
     match_dict = {
         "facebookID": best_match["userID"],
         "imageURL": best_match["url"],
-        "petType": best_match["type"],
+        "petType": best_match["petType"],
         "confidence": best_match["confidence"],
         "caregiverName": "Happy Paws & Claws",
         "caregiverAddress": "1555 Haste St, Berkeley, CA"
