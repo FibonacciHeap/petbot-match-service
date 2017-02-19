@@ -53,7 +53,8 @@ def check_match():
     # Get pet data
     pet_data = request.data
     if type(pet_data) == str:
-        return jsonify({"Error": "Could not read the request data."}), 400
+        #return jsonify({"Error": "Could not read the request data."}), 400
+        pet_data = json.loads(pet_data)
 
     pet = pet_data["pet"]
     other_pets = pet_data["otherPets"]
