@@ -81,7 +81,7 @@ def check_match_routine(pet, closest_pets):
     closest_pets = assign_match_scores(pet, closest_pets)
 
     # 2. Send top animal information to NLU svc
-    match = create_match_request(closest_pets)
+    match = create_match_request(pet, closest_pets)
     if not match:
         return jsonify({})
 
@@ -105,7 +105,7 @@ def notify_match_to_user(match):
     r = requests.post(NLU_MATCH_URL, data=json.dumps(body), headers=headers)
     print ("    Succeess?", r.status_code, r.text)
 
-def create_match_request(possible_pets):
+def create_match_request(pet, possible_pets):
     """
     Return a JSON with relevant match information:
           {
@@ -121,6 +121,7 @@ def create_match_request(possible_pets):
     best_match = max(possible_pets, key=lambda pet: pet["confidence"])
     if best_match["confidence"] < 0.25:
         return None
+    best_match = pet if pet["reportType"] == "owner" else best_match
     match_dict = {
         "facebookID": best_match["userID"],
         "imageURL": best_match["url"],
