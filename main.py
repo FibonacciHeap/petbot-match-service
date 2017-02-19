@@ -172,9 +172,7 @@ def calculate_distance_in_feet(lat1, lon1, lat2, lon2):
   o = (lat2-lat1) * (3.141592/180);
   l = (lon2-lon1) * (3.141592/180);
 
-  x = sin(o/2) * sin(o/2) +
-          cos(a1) * cos(a2) *
-          sin(l/2) * sin(l/2);
+  x = sin(o/2) * sin(o/2) + cos(a1) * cos(a2) * sin(l/2) * sin(l/2);
   c = 2 * atan2(sqrt(x), sqrt(1-x));
   d = R * c;
 
