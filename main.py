@@ -71,6 +71,51 @@ def check_match():
 # HELPERS
 #####################################################
 
+def report_match():
+    body1 = {
+      "recipient": {
+        "id": int(match["facebookID"])
+      },
+      "message": {
+        "text": "We are 88% confident" + " that this is your dog. Is it?"
+      }
+    }
+    body2 = {
+      "recipient": {
+        "id": "1245562518853936"
+      },
+      "message": {
+        "attachment": {
+            "type": "image",
+            "payload": {
+                "url": "http://b-townblog.com/wp-content/uploads/2014/04/FoundDog-crab.jpg"
+                "is_reusable": True
+            }
+        }
+      }
+    }
+    body3 = {
+      "recipient": {
+        "id": int(match["facebookID"])
+      },
+      "message": {
+        "text": "If you think it is, you can visit \"Paws Paradise\"" +
+        " at any time to verify."
+      }
+    }
+
+    headers = { "Content-Type" : "application/json" }
+    url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAaaynZCAqP0BAEEcInI5K5cAoSuBVZCO9rYiH4eh3qwS43T2lhWNTppHl6nHmFHD9LjCDdMrrFyat8kfDjIVMrFNuTZCKCompQZBVgYTi0UAUPR6viDOgvb9FwPleP6CRabx7wEudPmIjYMrmZCGFKiUclBgSQmGfeYWqaddjQZDZD"
+
+    r = requests.post(url, data=json.dumps(body1), headers=headers)
+    print ("    Succeess?", r.status_code, r.text)
+
+    r = requests.post(url, data=json.dumps(body2), headers=headers)
+    print ("    Succeess?", r.status_code, r.text)
+
+    r = requests.post(url, data=json.dumps(body3), headers=headers)
+    print ("    Succeess?", r.status_code, r.text)
+
 def check_match_routine(pet, closest_pets):
     """
     Check if there is a match with the pet and notify
