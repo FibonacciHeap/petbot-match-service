@@ -37,15 +37,16 @@ def triplet(rgb, lettercase=LOWERCASE):
 
 @app.route('/')
 def index():
-    match = {
-              "facebookID": "1245562518853936",
-              "imageURL": "https://s-media-cache-ak0.pinimg.com/736x/2e/b9/1a/2eb91a76325d9c406ab97e981990ad78.jpg",
-              "petType": "monster",
-              "confidence": "0.88",
-              "caregiverName": "The Doggo Paradise",
-              "caregiverAddress": "1555 Haste St, Berkeley, CA"
-            }
-    notify_match_to_user(match)
+    # match = {
+    #           "facebookID": "1245562518853936",
+    #           "imageURL": "https://s-media-cache-ak0.pinimg.com/736x/2e/b9/1a/2eb91a76325d9c406ab97e981990ad78.jpg",
+    #           "petType": "monster",
+    #           "confidence": "0.88",
+    #           "caregiverName": "The Doggo Paradise",
+    #           "caregiverAddress": "1555 Haste St, Berkeley, CA"
+    #         }
+    # notify_match_to_user(match)
+    report_match()
     return 'Hi, I am up :)'
 
 @app.route('/match/check', methods=['POST'])
