@@ -3,6 +3,8 @@ import json
 from math import sqrt, exp
 from multiprocessing.dummy import Pool
 import time
+import requests
+import json
 
 app = Flask(__name__)
 pool = Pool(processes=1)
@@ -14,6 +16,7 @@ pool = Pool(processes=1)
 OWNER_REPORTED_DB_TABLE_NAME = 'OwnerReports'
 SAMARITAN_REPORTED_DB_TABLE_NAME = 'SamaritanReports'
 MAX_COLOR_DELTA = 764.8339663572415
+NLU_MATCH_URL = "https://pd-messenger-bot.herokuapps.com/webhook?hub.verify_token=TOKEN&hub.mode=subscribe"
 
 # Credits: http://stackoverflow.com/questions/4296249/
 # how-do-i-convert-a-hex-triplet-to-an-rgb-tuple-and-back
@@ -34,21 +37,30 @@ def triplet(rgb, lettercase=LOWERCASE):
 
 @app.route('/')
 def index():
-    #table = lookup_table(SAMARITAN_REPORTED_DB_TABLE_NAME)
-    #print(table)
-    #return table
-    return 'test'
+    match = {
+              "facebookID": "1245562518853936",
+              "imageURL": "https://s-media-cache-ak0.pinimg.com/736x/2e/b9/1a/2eb91a76325d9c406ab97e981990ad78.jpg",
+              "petType": "monster",
+              "confidence": "0.88",
+              "caregiverName": "The Doggo Paradise",
+              "caregiverAddress": "1555 Haste St, Berkeley, CA"
+            }
+    notify_match_to_user(match)
+    return 'Hi, I am up :)'
 
 @app.route('/match/check', methods=['POST'])
 def check_match():
     # Get pet data
-    pet = request.data
-    if type(pet) == str:
+    pet_data = request.data
+    if type(petData) == str:
         return jsonify({"Error": "Could not read the request data."}), 400
+
+    pet = pet_data["pet"]
+    other_pets = pet_data["otherPets"]
 
     # Asynchronously run check match routine
     callback = lambda: log_data("Finished match at", time.time())
-    pool.apply_async(check_match_routine, args=[pet], callback=callback)
+    pool.apply_async(check_match_routine, args=[pet, other_pets], callback=callback)
 
     # Acknowledge that match is being checked
     return jsonify({}), 200
@@ -57,43 +69,44 @@ def check_match():
 # HELPERS
 #####################################################
 
-def check_match_routine(pet):
+def check_match_routine(pet, closest_pets):
     """
     Check if there is a match with the pet and notify
     NLU service if there is.
     """
-    # 0. Decide which table to query (SR or OR)
-    table_to_query = get_table_to_query(pet["type"])
-
-    # 1. Get closest records within 100 miles radius
-    #    that match in type, haven't been matched,
-    #    and haven't been rejected
-    closest_pets = get_closest_pets(pet)
-    if (len(closest_pets) == 0):
-        print("No matches for pet", pet["reportId"])
-        return
-
-    # 2. Run matching algorithm between the current
+    # 1. Run matching algorithm between the current
     #    animal and the closest ones
     assign_match_scores(pet, closest_pets)
 
-    # 3. Send top animal information to NLU svc
-    match = create_match_request(possible_pets)
-    notify_match_to_nlu(match)
+    # 2. Send top animal information to NLU svc
+    match = create_match_request(closest_pets)
+    notify_match_to_user(match)
 
-def notify_match_to_nlu(match):
+def notify_match_to_user(match):
     """
-    Notify the NLU service about a new match.
+    Notify the User service about a new match.
     """
-    pass
+    body = {
+        "object": "special",
+        "data": match
+    }
+
+    headers = { "Content-Type" : "application/json" }
+
+    print ("Sending match", match)
+    r = requests.post(NLU_MATCH_URL, data=json.dumps(body), headers=headers)
+    print ("    Succeess?", r.status_code, r.text)
 
 def create_match_request(possible_pets):
     """
     Return a JSON with relevant match information:
           {
+              "facebookID": <text>,
               "imageURL": <text>,
               "petType": <text>,
-              "confidence": <float>
+              "confidence": <float>,
+              "caregiverName": <text>,
+              "caregiverAddress": <text>
           }
     """
     best_match = max(possible_pets, key=lambda pet: pet["confidence"])
@@ -105,12 +118,6 @@ def create_match_request(possible_pets):
         "confidence": best_match["confidence"]
     }
     return jsonify(match_dict)
-
-def get_table_to_query(pet_type):
-    if pet_type == "samaritan":
-        return OWNER_REPORTED_DB_TABLE_NAME
-    elif pet_type == "owner":
-        return SAMARITAN_REPORTED_DB_TABLE_NAME
 
 def get_closest_pets(pet, max_dist_in_miles = 50):
     """
@@ -170,3 +177,10 @@ if __name__ == "__main__":
 #     for pet in possible_pets:
 #         pet["breedScore"] = calculate_breed_match(breed, pet["breed"])
 #     return possible_pets
+
+# NOT DOING QUERIES ANYMORE
+# def get_table_to_query(pet_type):
+#     if pet_type == "samaritan":
+#         return OWNER_REPORTED_DB_TABLE_NAME
+#     elif pet_type == "owner":
+#         return SAMARITAN_REPORTED_DB_TABLE_NAME
