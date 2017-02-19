@@ -90,6 +90,7 @@ def notify_match_to_user(match):
     """
     Notify the User service about a new match.
     """
+
     body = {
         "object": "special",
         "data": match
@@ -98,7 +99,7 @@ def notify_match_to_user(match):
     headers = { "Content-Type" : "application/json" }
 
     print ("Sending match", match)
-    r = requests.post(NLU_MATCH_URL, data=json.dumps(body), headers=headers)
+    r = requests.post(NLU_MATCH_URL, data=json.dumps(body.decode("utf-8")), headers=headers)
     print ("    Succeess?", r.status_code, r.text)
 
 def create_match_request(possible_pets):
@@ -179,6 +180,7 @@ def calculate_distance_in_mt(lat1, lon1, lat2, lon2):
 
   FEET_KM_CONSTANT = 3.280839895
   return d * FEET_KM_CONSTANT
+
 
 def log_data(data):
     print("Log:", data)
