@@ -63,7 +63,7 @@ def check_match():
     pool.apply_async(check_match_routine, args=[pet, other_pets], callback=callback)
 
     # Acknowledge that match is being checked
-    return jsonify({}), 200
+    return jsonify({})
 
 #####################################################
 # HELPERS
