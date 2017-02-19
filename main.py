@@ -115,7 +115,7 @@ def create_match_request(possible_pets):
     """
     print("Candidates", possible_pets)
     best_match = max(possible_pets, key=lambda pet: pet["confidence"])
-    if best_match["confidence"] < 0.3:
+    if best_match["confidence"] < 0.25:
         return jsonify({})
     match_dict = {
         "facebookID": best_match["userID"],
@@ -163,11 +163,11 @@ def assign_match_scores(pet, possible_pets):
         p["confidence"] = calculate_match_score(p)
     return possible_pets
 
-def feet_to_miles(lat1, lon1, lat2, lon2):
-    return 5280 * calculate_distance_in_feet(lat1, lon1, lat2, lon2)
+def mt_to_miles(lat1, lon1, lat2, lon2):
+    return calculate_distance_in_mt(lat1, lon1, lat2, lon2)/1609.34
 
-def calculate_distance_in_feet(lat1, lon1, lat2, lon2):
-  R = 6371000
+def calculate_distance_in_mt(lat1, lon1, lat2, lon2):
+  R = 6371e3
   a1 = lat1 * (3.141592/180)
   a2 = lat2 * (3.141592/180)
   o = (lat2-lat1) * (3.141592/180)
