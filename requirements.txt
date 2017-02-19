@@ -1,3 +1,2 @@
-Flask==0.12
-google.cloud
-gunicorn==19.6.0
+flask
+gunicorn
