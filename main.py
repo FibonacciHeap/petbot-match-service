@@ -176,7 +176,7 @@ def calculate_distance_in_feet(lat1, lon1, lat2, lon2):
   c = 2 * atan2(sqrt(x), sqrt(1-x));
   d = R * c;
 
-  var FEET_KM_CONSTANT = 3.280839895;
+  FEET_KM_CONSTANT = 3.280839895;
   return d * FEET_KM_CONSTANT;
 def log_data(data):
     print("Log:", data)
