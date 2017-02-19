@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 import json
-from math import sqrt, exp
+from math import sqrt, exp, cos, sin, atan2
 from multiprocessing.dummy import Pool
 import time
 import requests
@@ -143,6 +143,11 @@ def assign_color_difference(color, possible_pets):
         pet["colorDelta"] = calculate_color_difference(color, pet["color"])
     return possible_pets
 
+def assign_distances(lat, lon, possible_pets):
+    for p in possible_pets:
+        p["distance"] = feet_to_miles(lat, lon, p["reportLat"], p["reportLon"])
+    return possible_pets
+
 def assign_match_scores(pet, possible_pets):
     def calculate_match_score(p):
         w1, w2 = 0.75, 0.25
@@ -151,11 +156,30 @@ def assign_match_scores(pet, possible_pets):
         probability_function = lambda x, y: w1*sigmoid_g1(x) + w2*linear_g2(y)
         f1, f2 = p["distance"], p["colorDelta"]
         return probability_function(f1, f2)
+    assign_distances(pet["reportLat"], pet["reportLon"], possible_pets)
     assign_color_difference(pet["color"], possible_pets)
     for p in possible_pets:
         pet["confidence"] = calculate_match_score(p)
     return possible_pets
 
+def feet_to_miles(lat1, lon1, lat2, lon2):
+    return 5280 * calculate_distance_in_feet(lat1, lon1, lat2, lon2)
+
+def calculate_distance_in_feet(lat1, lon1, lat2, lon2):
+  R = 6371000;
+  a1 = lat1 * (3.141592/180);
+  a2 = lat2 * (3.141592/180);
+  o = (lat2-lat1) * (3.141592/180);
+  l = (lon2-lon1) * (3.141592/180);
+
+  x = sin(o/2) * sin(o/2) +
+          cos(a1) * cos(a2) *
+          sin(l/2) * sin(l/2);
+  c = 2 * atan2(sqrt(x), sqrt(1-x));
+  d = R * c;
+
+  var FEET_KM_CONSTANT = 3.280839895;
+  return d * FEET_KM_CONSTANT;
 def log_data(data):
     print("Log:", data)
 
