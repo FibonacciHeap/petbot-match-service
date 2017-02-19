@@ -16,7 +16,7 @@ pool = Pool(processes=1)
 OWNER_REPORTED_DB_TABLE_NAME = 'OwnerReports'
 SAMARITAN_REPORTED_DB_TABLE_NAME = 'SamaritanReports'
 MAX_COLOR_DELTA = 764.8339663572415
-NLU_MATCH_URL = "https://pd-messenger-bot.herokuapps.com/webhook?hub.verify_token=TOKEN&hub.mode=subscribe"
+NLU_MATCH_URL = "https://pd-messenger-bot.herokuapp.com/webhook?hub.verify_token=TOKEN&hub.mode=subscribe"
 
 # Credits: http://stackoverflow.com/questions/4296249/
 # how-do-i-convert-a-hex-triplet-to-an-rgb-tuple-and-back
