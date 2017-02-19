@@ -78,7 +78,7 @@ def check_match_routine(pet, closest_pets):
     """
     # 1. Run matching algorithm between the current
     #    animal and the closest ones
-    assign_match_scores(pet, closest_pets)
+    closest_pets = assign_match_scores(pet, closest_pets)
 
     # 2. Send top animal information to NLU svc
     match = create_match_request(closest_pets)
@@ -113,9 +113,10 @@ def create_match_request(possible_pets):
               "caregiverAddress": <text>
           }
     """
+    print("Candidates", possible_pets)
     best_match = max(possible_pets, key=lambda pet: pet["confidence"])
     if best_match["confidence"] < 0.3:
-        return None
+        return jsonify({})
     match_dict = {
         "facebookID": best_match["userID"],
         "imageURL": best_match["url"],
@@ -156,8 +157,8 @@ def assign_match_scores(pet, possible_pets):
         probability_function = lambda x, y: w1*sigmoid_g1(x) + w2*linear_g2(y)
         f1, f2 = p["distance"], p["colorDelta"]
         return probability_function(f1, f2)
-    assign_distances(pet["reportLat"], pet["reportLon"], possible_pets)
-    assign_color_difference(pet["color"], possible_pets)
+    possible_pets = assign_distances(pet["reportLat"], pet["reportLon"], possible_pets)
+    possible_pets = assign_color_difference(pet["color"], possible_pets)
     for p in possible_pets:
         p["confidence"] = calculate_match_score(p)
     return possible_pets
@@ -166,18 +167,19 @@ def feet_to_miles(lat1, lon1, lat2, lon2):
     return 5280 * calculate_distance_in_feet(lat1, lon1, lat2, lon2)
 
 def calculate_distance_in_feet(lat1, lon1, lat2, lon2):
-  R = 6371000;
-  a1 = lat1 * (3.141592/180);
-  a2 = lat2 * (3.141592/180);
-  o = (lat2-lat1) * (3.141592/180);
-  l = (lon2-lon1) * (3.141592/180);
+  R = 6371000
+  a1 = lat1 * (3.141592/180)
+  a2 = lat2 * (3.141592/180)
+  o = (lat2-lat1) * (3.141592/180)
+  l = (lon2-lon1) * (3.141592/180)
 
-  x = sin(o/2) * sin(o/2) + cos(a1) * cos(a2) * sin(l/2) * sin(l/2);
-  c = 2 * atan2(sqrt(x), sqrt(1-x));
-  d = R * c;
+  x = sin(o/2) * sin(o/2) + cos(a1) * cos(a2) * sin(l/2) * sin(l/2)
+  c = 2 * atan2(sqrt(x), sqrt(1-x))
+  d = R * c
 
-  FEET_KM_CONSTANT = 3.280839895;
-  return d * FEET_KM_CONSTANT;
+  FEET_KM_CONSTANT = 3.280839895
+  return d * FEET_KM_CONSTANT
+
 def log_data(data):
     print("Log:", data)
 
