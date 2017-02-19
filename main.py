@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import json
 from math import sqrt, exp
 from multiprocessing.dummy import Pool
